@@ -27,10 +27,11 @@ const App: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // --- Interaction Logic ---
+  // --- Interaction Logic (Pointer Events for Mouse + Touch) ---
 
-  const handleMouseDown = useCallback((e: React.MouseEvent, id: string) => {
-    if (e.button !== 0) return; // Only left click
+  const handlePointerDown = useCallback((e: React.PointerEvent, id: string) => {
+    // Allow primary button (left click) or touch contact
+    if (e.button !== 0) return; 
 
     const item = items.find(i => i.id === id);
     if (!item) return;
@@ -47,7 +48,7 @@ const App: React.FC = () => {
     });
   }, [items]);
 
-  const handleResizeStart = useCallback((e: React.MouseEvent, id: string) => {
+  const handleResizeStart = useCallback((e: React.PointerEvent, id: string) => {
     if (e.button !== 0) return;
 
     const item = items.find(i => i.id === id);
@@ -65,8 +66,12 @@ const App: React.FC = () => {
     });
   }, [items]);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
+  // Using native PointerEvent type for window listeners
+  const handlePointerMove = useCallback((e: PointerEvent) => {
     if (!dragState.isDragging || !dragState.itemId) return;
+    
+    // Prevent default touch actions like scrolling while dragging
+    e.preventDefault(); 
 
     const deltaX = e.clientX - dragState.startX;
     const deltaY = e.clientY - dragState.startY;
@@ -92,7 +97,7 @@ const App: React.FC = () => {
     }));
   }, [dragState]);
 
-  const handleMouseUp = useCallback(() => {
+  const handlePointerUp = useCallback(() => {
     if (dragState.isDragging) {
       setDragState(prev => ({ 
         ...prev, 
@@ -105,17 +110,20 @@ const App: React.FC = () => {
   // Global event listeners for drag/resize
   useEffect(() => {
     if (dragState.isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('pointermove', handlePointerMove, { passive: false }); // passive: false needed to preventDefault
+      window.addEventListener('pointerup', handlePointerUp);
+      window.addEventListener('pointercancel', handlePointerUp);
     } else {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
     }
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
     };
-  }, [dragState.isDragging, handleMouseMove, handleMouseUp]);
+  }, [dragState.isDragging, handlePointerMove, handlePointerUp]);
 
   // --- Actions ---
 
@@ -216,7 +224,7 @@ const App: React.FC = () => {
       {/* Main Canvas */}
       <div 
         ref={containerRef}
-        className="flex-1 relative overflow-hidden"
+        className="flex-1 relative overflow-hidden touch-none" // prevent browser gestures on canvas
         style={{
           // Use CSS gradient as fallback if no image
           background: backgroundImage 
@@ -245,7 +253,7 @@ const App: React.FC = () => {
             key={item.id}
             item={item}
             isActive={dragState.itemId === item.id}
-            onMouseDown={handleMouseDown}
+            onPointerDown={handlePointerDown}
             onResizeStart={handleResizeStart}
             onRemove={removeItem}
             onBringToFront={bringToFront}
