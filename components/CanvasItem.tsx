@@ -5,8 +5,8 @@ import { X, Scaling, Image as ImageIcon } from 'lucide-react';
 interface CanvasItemProps {
   item: MoodboardItem;
   isActive: boolean;
-  onMouseDown: (e: React.MouseEvent, id: string) => void;
-  onResizeStart: (e: React.MouseEvent, id: string) => void;
+  onPointerDown: (e: React.PointerEvent, id: string) => void;
+  onResizeStart: (e: React.PointerEvent, id: string) => void;
   onRemove: (id: string) => void;
   onBringToFront: (id: string) => void;
   onSetBackground: (content: string) => void;
@@ -15,19 +15,21 @@ interface CanvasItemProps {
 export const CanvasItem: React.FC<CanvasItemProps> = ({
   item,
   isActive,
-  onMouseDown,
+  onPointerDown,
   onResizeStart,
   onRemove,
   onBringToFront,
   onSetBackground
 }) => {
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handlePointerDown = (e: React.PointerEvent) => {
+    // Only stop propagation if we are clicking directly on the item to move it
+    // But we need to allow the event to exist so we can track movement
     e.stopPropagation();
     onBringToFront(item.id);
-    onMouseDown(e, item.id);
+    onPointerDown(e, item.id);
   };
 
-  const handleResizeMouseDown = (e: React.MouseEvent) => {
+  const handleResizePointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();
     onBringToFront(item.id);
     onResizeStart(e, item.id);
@@ -43,8 +45,9 @@ export const CanvasItem: React.FC<CanvasItemProps> = ({
         zIndex: item.zIndex,
         transform: `rotate(${item.rotation}deg)`,
         cursor: isActive ? 'grabbing' : 'grab',
+        touchAction: 'none' // Critical: Prevents scrolling on mobile while dragging
       }}
-      onMouseDown={handleMouseDown}
+      onPointerDown={handlePointerDown}
     >
       {/* 
          Changed bg-white to bg-white/40 (Glass) 
@@ -63,6 +66,7 @@ export const CanvasItem: React.FC<CanvasItemProps> = ({
         {/* Hover Controls - Dark buttons with light text */}
         <div className="absolute -top-3 -right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1 z-50">
            <button
+            onPointerDown={(e) => e.stopPropagation()} // Prevent drag when clicking button
             onClick={(e) => { e.stopPropagation(); onSetBackground(item.content); }}
             className="bg-[#2E1065] text-violet-200 p-1.5 rounded-full shadow-lg hover:bg-[#4C1D95] hover:text-white transition-colors border border-white/20"
             title="Set as Background"
@@ -70,6 +74,7 @@ export const CanvasItem: React.FC<CanvasItemProps> = ({
             <ImageIcon size={14} />
           </button>
           <button
+            onPointerDown={(e) => e.stopPropagation()} // Prevent drag when clicking button
             onClick={(e) => { e.stopPropagation(); onRemove(item.id); }}
             className="bg-[#2E1065] text-red-300 p-1.5 rounded-full shadow-lg hover:bg-red-900/80 hover:text-red-100 transition-colors border border-white/20"
             title="Remove Item"
@@ -81,7 +86,7 @@ export const CanvasItem: React.FC<CanvasItemProps> = ({
         {/* Resize Handle - Dark button */}
         <div 
           className="absolute -bottom-3 -right-3 opacity-0 group-hover:opacity-100 cursor-nwse-resize p-1.5 bg-[#2E1065] text-violet-200 rounded-full shadow-lg border border-white/20 z-50 hover:text-white hover:bg-[#4C1D95]"
-          onMouseDown={handleResizeMouseDown}
+          onPointerDown={handleResizePointerDown}
         >
           <Scaling size={14} />
         </div>
