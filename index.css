@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+/* ========================================
+   TAILWIND THEME
+   ======================================== */
+
+@theme {
+  /* Custom Colors */
+  --color-lavender: #E9D5FF;
+  
+  /* Font Families */
+  --font-family-sans: 'Inter', sans-serif;
+  --font-family-serif: 'Playfair Display', serif;
+}
+
+/* ========================================
+   CUSTOM UTILITY CLASSES
+   ======================================== */
+
+/* Serif font utility */
+.serif {
+    font-family: var(--font-family-serif);
+}
+
+/* Custom Cursors */
+.cursor-grab {
+    cursor: grab;
+}
+
+.cursor-grabbing {
+    cursor: grabbing;
+}
+
+/* ========================================
+   CUSTOM SCROLLBAR
+   ======================================== */
+
+/* Hide scrollbar */
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+/* ========================================
+   GLOBAL STYLES
+   ======================================== */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-family-sans);
+    background-color: var(--color-lavender);
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font-family-serif);
+}
