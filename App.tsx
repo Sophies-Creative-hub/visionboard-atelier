@@ -557,7 +557,7 @@ const App: React.FC = () => {
         ))}
       </div>
 
-      <div className="absolute bottom-20 sm:bottom-16 md:bottom-12 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full max-w-md pointer-events-none exclude-from-export">
+      <div className="absolute bottom-32 sm:bottom-24 md:bottom-16 lg:bottom-12 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full max-w-md pointer-events-none exclude-from-export">
         <div className="bg-[#1e1b4b]/95 px-8 py-4 rounded-full shadow-2xl shadow-[#2E1065]/20 border border-white/10 flex items-center gap-8 pointer-events-auto">
           
           <button 
