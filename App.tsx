@@ -66,6 +66,17 @@ const App: React.FC = () => {
     });
   }, [items]);
 
+  // New handler for button-based resizing (touch friendly)
+  const handleDiscreteResize = (id: string, delta: number) => {
+    setItems(prev => prev.map(item => {
+      if (item.id === id) {
+        const newWidth = Math.max(50, item.width + delta);
+        return { ...item, width: newWidth };
+      }
+      return item;
+    }));
+  };
+
   // Using native PointerEvent type for window listeners
   const handlePointerMove = useCallback((e: PointerEvent) => {
     if (!dragState.isDragging || !dragState.itemId) return;
@@ -200,6 +211,17 @@ const App: React.FC = () => {
     }
   }, [containerRef]);
 
+  // Close selection when clicking on background
+  const handleBackgroundClick = (e: React.MouseEvent) => {
+    if (e.target === containerRef.current) {
+        // Just clearing dragging/selection logic is handled by pointerUp generally, 
+        // but explicit deselect logic could go here if we had a specific 'selectedId' state
+        // apart from drag state. 
+        // For now, the CanvasItem handles 'isActive' via 'dragState.itemId' check passed down 
+        // which might be insufficient if we want persistent selection without dragging.
+    }
+  };
+
   return (
     <div className="min-h-screen text-white overflow-hidden flex flex-col relative selection:bg-violet-300">
       
@@ -224,6 +246,7 @@ const App: React.FC = () => {
       {/* Main Canvas */}
       <div 
         ref={containerRef}
+        onClick={handleBackgroundClick}
         className="flex-1 relative overflow-hidden touch-none" // prevent browser gestures on canvas
         style={{
           // Use CSS gradient as fallback if no image
@@ -255,6 +278,7 @@ const App: React.FC = () => {
             isActive={dragState.itemId === item.id}
             onPointerDown={handlePointerDown}
             onResizeStart={handleResizeStart}
+            onResizeDiscrete={handleDiscreteResize}
             onRemove={removeItem}
             onBringToFront={bringToFront}
             onSetBackground={handleSetBackground}
