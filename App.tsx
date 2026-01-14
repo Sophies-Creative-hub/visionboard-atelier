@@ -359,7 +359,28 @@ const App: React.FC = () => {
           bgImg.src = backgroundImage;
           setTimeout(reject, 5000);
         });
-        ctx.drawImage(bgImg, 0, 0, width, height);
+        
+        // Calculate cover sizing (like CSS object-fit: cover)
+        const imgRatio = bgImg.width / bgImg.height;
+        const canvasRatio = width / height;
+        
+        let drawWidth, drawHeight, offsetX, offsetY;
+        
+        if (imgRatio > canvasRatio) {
+          // Image is wider than canvas
+          drawHeight = height;
+          drawWidth = height * imgRatio;
+          offsetX = (width - drawWidth) / 2;
+          offsetY = 0;
+        } else {
+          // Image is taller than canvas
+          drawWidth = width;
+          drawHeight = width / imgRatio;
+          offsetX = 0;
+          offsetY = (height - drawHeight) / 2;
+        }
+        
+        ctx.drawImage(bgImg, offsetX, offsetY, drawWidth, drawHeight);
       } else {
         const gradient = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width/2);
         gradient.addColorStop(0, '#E9D5FF');
@@ -516,7 +537,7 @@ const App: React.FC = () => {
         ))}
       </div>
 
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full max-w-md pointer-events-none exclude-from-export">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full max-w-md pointer-events-none exclude-from-export">
         <div className="bg-[#1e1b4b]/95 px-8 py-4 rounded-full shadow-2xl shadow-[#2E1065]/20 border border-white/10 flex items-center gap-8 pointer-events-auto">
           
           <button 
