@@ -416,7 +416,27 @@ const App: React.FC = () => {
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 4;
         
-        ctx.drawImage(img, item.x, item.y, item.width, item.width);
+        // Calculate cover sizing for item
+        const imgRatio = img.width / img.height;
+        const itemSize = item.width;
+        
+        let drawWidth, drawHeight, offsetX, offsetY;
+        
+        if (imgRatio > 1) {
+          // Image is wider - fit to height
+          drawHeight = itemSize;
+          drawWidth = itemSize * imgRatio;
+          offsetX = item.x - (drawWidth - itemSize) / 2;
+          offsetY = item.y;
+        } else {
+          // Image is taller - fit to width
+          drawWidth = itemSize;
+          drawHeight = itemSize / imgRatio;
+          offsetX = item.x;
+          offsetY = item.y - (drawHeight - itemSize) / 2;
+        }
+        
+        ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
         
         ctx.restore();
       }
@@ -537,7 +557,7 @@ const App: React.FC = () => {
         ))}
       </div>
 
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full max-w-md pointer-events-none exclude-from-export">
+      <div className="absolute bottom-15 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4 w-full max-w-md pointer-events-none exclude-from-export">
         <div className="bg-[#1e1b4b]/95 px-8 py-4 rounded-full shadow-2xl shadow-[#2E1065]/20 border border-white/10 flex items-center gap-8 pointer-events-auto">
           
           <button 
