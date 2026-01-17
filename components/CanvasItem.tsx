@@ -24,20 +24,14 @@ export const CanvasItem: React.FC<CanvasItemProps> = ({
   onSetBackground
 }) => {
   const handlePointerDown = (e: React.PointerEvent) => {
-    // Stop propagation to prevent triggering background click
     e.stopPropagation();
-    
-    // CRITICAL: Capture the pointer. This ensures the element keeps receiving events
-    // even if the cursor moves outside of it during a fast drag.
     e.currentTarget.setPointerCapture(e.pointerId);
-    
     onBringToFront(item.id);
     onPointerDown(e, item.id);
   };
 
   const handleResizePointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();
-    // Capture pointer for resize handle too
     e.currentTarget.setPointerCapture(e.pointerId);
     onBringToFront(item.id);
     onResizeStart(e, item.id);
@@ -53,94 +47,93 @@ export const CanvasItem: React.FC<CanvasItemProps> = ({
         zIndex: item.zIndex,
         transform: `rotate(${item.rotation}deg)`,
         cursor: isActive ? 'grabbing' : 'grab',
-        touchAction: 'none', // Critical: Prevents scrolling on mobile while dragging
-        // Removed will-change to prevent rendering issues
+        touchAction: 'none',
       }}
       onPointerDown={handlePointerDown}
     >
-      {/* 
-         Changed bg-white to bg-white/40 (Glass) 
-         Added backdrop-blur to smooth out the background behind the image 
-      */}
-      <div className={`relative bg-white/40 backdrop-blur-md p-3 transition-all duration-200 rounded-sm ${isActive ? 'shadow-2xl ring-2 ring-violet-500/50' : 'hover:shadow-lg hover:bg-white/50'}`}>
-        
-        {/* Image Content */}
+      <div
+        className={`
+          relative
+          bg-[#FFF7D3]/50
+          backdrop-blur-sm
+          p-2
+          rounded-sm
+          transition-all
+          duration-200
+          ${isActive ? 'shadow-lg ring-1 ring-[#CE7200]/50' : 'hover:shadow-md'}
+        `}
+      >
         <img
           src={item.content}
           alt="Moodboard asset"
-          className="w-full h-auto pointer-events-none block shadow-sm opacity-95"
+          className="w-full h-auto pointer-events-none block rounded-sm"
           style={{ objectFit: 'contain' }}
         />
-        
-        {/* Artistic Tape Effect */}
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-4 bg-white/30 backdrop-blur-sm rotate-1 shadow-sm border border-white/20 pointer-events-none"></div>
 
-        {/* 
-            ACTIVE TOOLBAR
-            Shows only when selected (isActive). 
-            Replaces hover-only interaction for better accessibility and touch support.
-        */}
         {isActive && (
-          <div 
-             className="exclude-from-export absolute -bottom-14 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-[#2E1065] p-2 rounded-xl shadow-xl border border-white/20 z-[60]"
-             onPointerDown={(e) => e.stopPropagation()} // Critical: Prevents tool interaction from triggering item drag
+          <div
+            className="
+              exclude-from-export
+              absolute
+              -bottom-12
+              left-1/2
+              -translate-x-1/2
+              flex
+              items-center
+              gap-2
+              bg-[#804100]/80
+              backdrop-blur-sm
+              p-1.5
+              rounded-xl
+              shadow-md
+              border border-[#FDF9F5]/20
+              z-[60]
+            "
+            onPointerDown={(e) => e.stopPropagation()}
           >
-            
-            {/* Decrease Size */}
             <button
-               onPointerDown={(e) => e.stopPropagation()}
-               onClick={(e) => { e.stopPropagation(); onResizeDiscrete(item.id, -20); }}
-               className="p-2 text-violet-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-               title="Verkleinern"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => { e.stopPropagation(); onResizeDiscrete(item.id, -20); }}
+              className="p-2 text-[#FFC682] hover:text-[#FDF9F5] hover:bg-[#FDF9F5]/10 rounded transition-colors"
+              title="Verkleinern"
             >
               <ZoomOut size={18} />
             </button>
-
-            {/* Increase Size */}
             <button
-               onPointerDown={(e) => e.stopPropagation()}
-               onClick={(e) => { e.stopPropagation(); onResizeDiscrete(item.id, 20); }}
-               className="p-2 text-violet-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-               title="Vergrößern"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => { e.stopPropagation(); onResizeDiscrete(item.id, 20); }}
+              className="p-2 text-[#FFC682] hover:text-[#FDF9F5] hover:bg-[#FDF9F5]/10 rounded transition-colors"
+              title="Vergrößern"
             >
               <ZoomIn size={18} />
             </button>
-
-             <div className="w-px h-4 bg-white/20 mx-1"></div>
-
-             {/* Set Background */}
+            <div className="w-px h-4 bg-[#FDF9F5]/20 mx-1" />
             <button
-               onPointerDown={(e) => e.stopPropagation()}
-               onClick={(e) => { e.stopPropagation(); onSetBackground(item.content); }}
-               className="p-2 text-violet-200 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
-               title="Als Hintergrund setzen"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => { e.stopPropagation(); onSetBackground(item.content); }}
+              className="p-2 text-[#FFC682] hover:text-[#FDF9F5] hover:bg-[#FDF9F5]/10 rounded transition-colors"
+              title="Als Hintergrund setzen"
             >
               <ImageIcon size={18} />
             </button>
-
-            <div className="w-px h-4 bg-white/20 mx-1"></div>
-
-            {/* Remove */}
+            <div className="w-px h-4 bg-[#FDF9F5]/20 mx-1" />
             <button
-               onPointerDown={(e) => e.stopPropagation()}
-               onClick={(e) => { e.stopPropagation(); onRemove(item.id); }}
-               className="p-2 text-red-300 hover:text-red-100 hover:bg-red-500/20 rounded-lg transition-colors"
-               title="Entfernen"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => { e.stopPropagation(); onRemove(item.id); }}
+              className="p-2 text-red-300 hover:text-red-100 hover:bg-red-500/20 rounded transition-colors"
+              title="Entfernen"
             >
               <X size={18} />
             </button>
-
-            {/* Drag Handle for Mouse (Legacy) */}
-            <div 
-              className="ml-1 cursor-nwse-resize text-violet-400 p-1 hover:text-white"
+            <div
+              className="ml-1 cursor-nwse-resize text-[#CE7200] p-1 hover:text-[#FDF9F5]"
               onPointerDown={handleResizePointerDown}
+              title="Größe ändern"
             >
-               <Scaling size={14} />
+              <Scaling size={14} />
             </div>
-
           </div>
         )}
-
       </div>
     </div>
   );

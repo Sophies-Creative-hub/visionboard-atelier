@@ -5,30 +5,42 @@
    ======================================== */
 
 @theme {
-  /* Custom Colors */
-  --color-lavender: #E9D5FF;
+  /* Custom Brand Colors */
+  --color-primary-orange: #CE7200;
+  --color-rust-red: #B7410E;
+  --color-light-orange: #FFC682;
+  --color-cream: #FFF7D3;
+  --color-dark-brown: #804100;
+  --color-text-dark: #1F1400;
+  --color-text-accent: #FDF9F5;
   
   /* Font Families */
-  --font-family-sans: 'Inter', sans-serif;
-  --font-family-serif: 'Playfair Display', serif;
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+  --font-family-mono: 'IBM Plex Mono', monospace;
+  --font-family-serif: Georgia, serif;
 }
 
 /* ========================================
    CUSTOM UTILITY CLASSES
    ======================================== */
 
+/* Mono font utility */
+.font-mono {
+  font-family: var(--font-family-mono);
+}
+
 /* Serif font utility */
-.serif {
-    font-family: var(--font-family-serif);
+.font-serif {
+  font-family: var(--font-family-serif);
 }
 
 /* Custom Cursors */
 .cursor-grab {
-    cursor: grab;
+  cursor: grab;
 }
 
 .cursor-grabbing {
-    cursor: grabbing;
+  cursor: grabbing;
 }
 
 /* ========================================
@@ -37,8 +49,8 @@
 
 /* Hide scrollbar */
 ::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
+  width: 0px;
+  background: transparent;
 }
 
 /* ========================================
@@ -46,14 +58,26 @@
    ======================================== */
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 body {
-    font-family: var(--font-family-sans);
-    background-color: var(--color-lavender);
+  font-family: var(--font-family-sans);
+  background-color: var(--color-cream);
+  color: var(--color-text-dark);
 }
 
 h1, h2, h3, h4 {
-    font-family: var(--font-family-serif);
+  font-family: var(--font-family-serif);
+}
+
+/* Selection color */
+::selection {
+  background-color: var(--color-light-orange);
+  color: var(--color-text-dark);
+}
+
+::-moz-selection {
+  background-color: var(--color-light-orange);
+  color: var(--color-text-dark);
 }
